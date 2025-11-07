@@ -19,7 +19,7 @@ package:
 
 lint:
 	pylint setup.py
-	pylint src/pyudev/_os
+	pylint src/pyudev
 
 PYREVERSE_OPTS = --output=pdf
 view:
