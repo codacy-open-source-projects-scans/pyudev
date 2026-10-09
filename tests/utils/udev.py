@@ -25,7 +25,6 @@ Parses the udev device database from :program:`udevadm`.
 .. moduleauthor::  mulhern <amulhern@redhat.com>
 """
 
-# isort: STDLIB
 import collections
 import errno
 import os
@@ -49,7 +48,7 @@ class UDevAdm:
 
         :returns: a working :class:`UDevAdm` object
         :rtype: :class:`UDevAdm`
-        :raises EnvironmentError:
+        :raises OSError:
         """
         for candidate in cls.CANDIDATES:
             try:
@@ -58,7 +57,7 @@ class UDevAdm:
                 # executable
                 udevadm.query_udev_version()
                 return udevadm
-            except EnvironmentError as error:
+            except OSError as error:
                 if error.errno != errno.ENOENT:
                     raise
 
@@ -73,7 +72,7 @@ class UDevAdm:
         if cls._adm is None:
             try:
                 cls._adm = cls.find()
-            except EnvironmentError:
+            except OSError:
                 pass
         return cls._adm
 
@@ -149,7 +148,7 @@ class UDevAdm:
             for l in self._execute_query(device_path, "property").splitlines()
         ]
 
-        if self.adm().query_udev_version() < 230:
+        if self.adm().query_udev_version() < 230:  # noqa: PLR2004
             num_pairs = len(pairs)
             indices = [i for i in range(num_pairs) if pairs[i][1] == ""]
             pairs = [
@@ -164,8 +163,8 @@ class UDevAdm:
         output = self._execute("info", "--attribute-walk", "--path", device_path)
         attribute_dump = output.decode(sys.getfilesystemencoding()).splitlines()
         attributes = {}
-        for line in attribute_dump:
-            line = line.strip()
+        for ln in attribute_dump:
+            line = ln.strip()
             if line.startswith("looking at parent device"):
                 # we don't continue with attributes of parent devices, we only
                 # want the attributes of the given device
@@ -210,7 +209,7 @@ class DeviceData:
     @property
     def exists(self):
         """
-        Whether this device has some real existance on machine.
+        Whether this device has some real existence on machine.
 
         :returns: True if the device does exist, otherwise False.
         :rtype: bool
@@ -288,7 +287,7 @@ class DeviceDatabase(collections.abc.Iterable, collections.abc.Sized):
     _db = None
 
     @classmethod
-    def db(cls, renew=False):  # pylint: disable=invalid-name
+    def db(cls, renew=False):
         """
         Get a database object.
 

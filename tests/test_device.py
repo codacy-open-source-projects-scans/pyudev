@@ -23,13 +23,12 @@ Test for devices.
 .. moduleauthor::  mulhern <amulhern@redhat.com>
 """
 
-# isort: STDLIB
 import gc
 
-from ._device_tests._attributes_tests import TestAttributes
-from ._device_tests._device_tests import TestDevice
-from ._device_tests._devices_tests import TestDevices  # pylint: disable=unused-import
-from ._device_tests._tags_tests import TestTags  # pylint: disable=unused-import
+from ._device_tests._attributes_tests import TestAttributes  # noqa: F401
+from ._device_tests._device_tests import TestDevice  # noqa: F401
+from ._device_tests._devices_tests import TestDevices  # noqa: F401
+from ._device_tests._tags_tests import TestTags  # noqa: F401
 
 
 def test_garbage():

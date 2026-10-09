@@ -23,7 +23,6 @@ Base mixin class for Qt5 support.
 .. moduleauthor::  Sebastian Wiesner  <lunaryorn@gmail.com>
 """
 
-# isort: LOCAL
 from pyudev.device import Device
 
 
@@ -31,8 +30,6 @@ class MonitorObserverMixin:
     """
     Base mixin for pyqt monitor observers.
     """
-
-    # pylint: disable=too-few-public-methods
 
     def _setup_notifier(self, monitor, notifier_class):
         self.monitor = monitor
@@ -78,8 +75,6 @@ class QUDevMonitorObserverMixin(MonitorObserverMixin):
     Obsolete monitor observer mixin.
     """
 
-    # pylint: disable=too-few-public-methods
-
     def _setup_notifier(self, monitor, notifier_class):
         MonitorObserverMixin._setup_notifier(self, monitor, notifier_class)
         self._action_signal_map = {
@@ -88,12 +83,13 @@ class QUDevMonitorObserverMixin(MonitorObserverMixin):
             "change": self.deviceChanged,
             "move": self.deviceMoved,
         }
-        # isort: STDLIB
-        import warnings  # pylint: disable=import-outside-toplevel
+
+        import warnings  # noqa: PLC0415
 
         warnings.warn(
             "Will be removed in 1.0. Use pyudev.pyqt5.MonitorObserver instead.",
             DeprecationWarning,
+            stacklevel=2,
         )
 
     def _emit_event(self, device):
@@ -115,7 +111,7 @@ def make_init(qobject, socket_notifier):
 
     def __init__(self, monitor, parent=None):
         qobject.__init__(self, parent)
-        # pylint: disable=protected-access
+
         self._setup_notifier(monitor, socket_notifier)
 
     return __init__
@@ -125,8 +121,6 @@ class MonitorObserverGenerator:
     """
     Class to generate a MonitorObserver class.
     """
-
-    # pylint: disable=too-few-public-methods
 
     @staticmethod
     def make_monitor_observer(qobject, signal, socket_notifier):
@@ -164,8 +158,6 @@ class QUDevMonitorObserverGenerator:
     """
     Class to generate a MonitorObserver class.
     """
-
-    # pylint: disable=too-few-public-methods
 
     @staticmethod
     def make_monitor_observer(qobject, signal, socket_notifier):

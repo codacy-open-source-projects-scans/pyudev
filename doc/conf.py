@@ -15,8 +15,8 @@
 # along with this library; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-import sys
 import os
+import sys
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -133,7 +133,7 @@ class UDevVersion(Directive):
 
 
 def setup(app):
-    from sphinx.ext.autodoc import cut_lines
+    from sphinx.ext.autodoc import cut_lines  # noqa: PLC0415
 
     app.connect("autodoc-process-docstring", cut_lines(2, what=["module"]))
     app.add_directive("udevversion", UDevVersion)

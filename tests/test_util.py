@@ -15,25 +15,16 @@
 # along with this library; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-# isort: STDLIB
-import sys
 
-# isort: THIRDPARTY
+import sys
+from unittest.mock import Mock
+
 import pytest
 from hypothesis import given, settings, strategies
 
-# isort: LOCAL
 from pyudev import Context, _util
 
 from .utils import is_unicode_string
-
-try:
-    # isort: STDLIB
-    from unittest.mock import Mock
-except ImportError:
-    # isort: THIRDPARTY
-    from mock import Mock
-
 
 _CONTEXT = Context()
 
@@ -163,13 +154,13 @@ def test_get_device_type_not_existing(tmpdir):
 
 
 def test_eintr_retry_call(tmpdir):
-    # isort: STDLIB
-    import os
-    import select
-    import signal
+
+    import os  # noqa: PLC0415
+    import select  # noqa: PLC0415
+    import signal  # noqa: PLC0415
 
     def handle_alarm(signum, frame):
-        # pylint: disable=unused-argument
+
         pass
 
     orig_alarm = signal.getsignal(signal.SIGALRM)

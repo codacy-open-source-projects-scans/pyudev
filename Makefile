@@ -18,8 +18,7 @@ package:
 	(umask 0022; python -m build; python -m twine check --strict ./dist/*)
 
 lint:
-	pylint setup.py
-	pylint src/pyudev
+	ruff check
 
 PYREVERSE_OPTS = --output=pdf
 view:
@@ -38,14 +37,24 @@ test-travis:
 
 .PHONY: fmt
 fmt:
-	isort setup.py src tests
-	black .
+	ruff check --fix --select I
+	ruff format
 
 .PHONY: fmt-travis
 fmt-travis:
-	isort --diff --check-only setup.py src tests
-	black . --check
+	ruff check --select I
+	ruff format --check
 
 .PHONY: yamllint
 yamllint:
 	yamllint --strict .github/workflows/*.yml
+	yamllint --strict .yamllint.yaml
+
+.PHONY: check-typos
+check-typos:
+	typos
+
+.PHONY: fix-typos
+fix-typos:
+	typos -w
+

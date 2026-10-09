@@ -188,7 +188,7 @@ gives you access to these attributes, but generally you should not need these.
 Use the device properties whenever possible.
 
 
-Examing the device hierarchy
+Examining the device hierarchy
 ----------------------------
 
 A :class:`Device` is part of a device hierarchy, and can have a
@@ -346,7 +346,7 @@ with None is an error.
 
 The Device class inherits from the abstract Mapping class, as it maps udev
 property names to their values. Consequently, if a Device object has no udev
-properties, an unusual but not impossible occurance, the object is
+properties, an unusual but not impossible occurrence, the object is
 interpreted as False in a boolean context.
 
 .. _pypi: https://pypi.python.org/pypi/pyudev

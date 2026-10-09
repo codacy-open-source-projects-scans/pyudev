@@ -20,30 +20,21 @@ Tests methods belonging to Device class.
 .. moduleauthor::  mulhern <amulhern@redhat.com>
 """
 
-# isort: STDLIB
 import gc
 import operator
 import os
 import re
 from datetime import timedelta
+from unittest import mock
 
-# isort: THIRDPARTY
 import pytest
 from hypothesis import given, settings, strategies
 
-# isort: LOCAL
 from pyudev import Device, Devices
 from pyudev.device import Attributes, Tags
 
 from .._constants import _CONTEXT, _CONTEXT_STRATEGY, _DEVICE_DATA, _DEVICES, _UDEV_TEST
 from ..utils import is_unicode_string
-
-try:
-    # isort: STDLIB
-    from unittest import mock
-except ImportError:
-    # isort: THIRDPARTY
-    import mock
 
 
 class TestDevice:
@@ -180,7 +171,7 @@ class TestDevice:
     @settings(max_examples=5)
     def test_sys_number(self, a_device):
         match = re.search(r"\d+$", a_device.sys_name)
-        # filter out devices with completely nummeric names (first character
+        # filter out devices with completely numeric names (first character
         # doesn't count according to the implementation of libudev)
         if match and match.start() > 1:
             assert a_device.sys_number == match.group(0)
@@ -248,8 +239,9 @@ class TestDevice:
         funcname = "udev_device_get_usec_since_initialized"
         spec = lambda d: None
         with mock.patch.object(a_device._libudev, funcname, autospec=spec) as func:
-            func.return_value = 100
-            assert a_device.time_since_initialized.microseconds == 100
+            sentinel_time_value = 100
+            func.return_value = sentinel_time_value
+            assert a_device.time_since_initialized.microseconds == sentinel_time_value
             func.assert_called_once_with(a_device)
 
     @given(_CONTEXT_STRATEGY, strategies.sampled_from(_DEVICE_DATA))
@@ -352,16 +344,12 @@ class TestDevice:
         device = Devices.from_path(a_context, device_datum.device_path)
         for prop in device_datum.properties:
             if prop == "DEVLINKS":
-                assert sorted(
-                    device.properties[prop].split(),
-                ) == sorted(
-                    device_datum.properties[prop].split(),
+                assert sorted(device.properties[prop].split()) == sorted(
+                    device_datum.properties[prop].split()
                 )
             elif prop == "TAGS":
-                assert sorted(
-                    device.properties[prop].split(":"),
-                ) == sorted(
-                    device_datum.properties[prop].split(":"),
+                assert sorted(device.properties[prop].split(":")) == sorted(
+                    device_datum.properties[prop].split(":")
                 )
             else:
                 # Do not test equality of device properties with udevadm oracle.
@@ -389,7 +377,6 @@ class TestDevice:
     @settings(max_examples=5)
     def test_getitem_nonexisting(self, a_device):
         with pytest.raises(KeyError) as excinfo:
-            # pylint: disable=pointless-statement
             a_device.properties["a non-existing property"]
         assert str(excinfo.value) == repr("a non-existing property")
 
@@ -397,9 +384,9 @@ class TestDevice:
     @settings(max_examples=5)
     def test_asint(self, a_context, device_datum):
         device = Devices.from_path(a_context, device_datum.device_path)
-        for prop, value in device_datum.properties.items():
+        for prop, val in device_datum.properties.items():
             try:
-                value = int(value)
+                value = int(val)
             except ValueError:
                 with pytest.raises(ValueError):
                     device.properties.asint(prop)
@@ -423,7 +410,7 @@ class TestDevice:
             elif value == "0":
                 assert not device.properties.asbool(prop)
             else:
-                with pytest.raises(ValueError) as exc_info:
+                with pytest.raises(ValueError):
                     device.properties.asbool(prop)
 
     @given(strategies.sampled_from(_DEVICES))
@@ -437,17 +424,17 @@ class TestDevice:
     @settings(max_examples=5)
     def test_equality(self, a_device):
         assert a_device == a_device.device_path
-        assert a_device == a_device
+        assert a_device == a_device  # noqa: PLR0124
         assert a_device.parent == a_device.parent
-        # pylint: disable=superfluous-parens
+
         assert not (a_device == a_device.parent)
 
     @given(strategies.sampled_from(_DEVICES))
     @settings(max_examples=5)
     def test_inequality(self, a_device):
-        # pylint: disable=superfluous-parens
+
         assert not (a_device != a_device.device_path)
-        assert not (a_device != a_device)
+        assert not (a_device != a_device)  # noqa: PLR0124
         assert not (a_device.parent != a_device.parent)
         assert a_device != a_device.parent
 

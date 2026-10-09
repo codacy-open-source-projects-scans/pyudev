@@ -23,11 +23,9 @@ Tests for devices.
 .. moduleauthor::  mulhern <amulhern@redhat.com>
 """
 
-# isort: THIRDPARTY
 import pytest
 from hypothesis import strategies
 
-# isort: LOCAL
 from pyudev import Context, DeviceNotFoundError, Devices
 
 from .utils import udev
@@ -57,7 +55,7 @@ def device_strategy(require_existing=True, filter_func=lambda x: True):
     The devices are filtered before being sampled to reduce the number
     of health failures.
 
-    :param bool require_existing: at the very last, verify existance
+    :param bool require_existing: at the very last, verify existence
     :param filter_func: a function to be used as a filter
     :type filter_func: Device -> bool
     """
@@ -88,7 +86,7 @@ _PROPERTY_STRATEGY = device_strategy().flatmap(
 
 _MATCH_PROPERTY_STRATEGY = _PROPERTY_STRATEGY.filter(lambda p: p[0][-4:] != "_ENC")
 
-if _UDEV_VERSION <= 230:
+if _UDEV_VERSION <= 230:  # noqa: PLR2004
     _MATCH_PROPERTY_STRATEGY = _MATCH_PROPERTY_STRATEGY.filter(
         lambda p: "[" not in p[1]
     )
@@ -105,11 +103,13 @@ _ATTRIBUTE_STRATEGY = _ATTRIBUTES_STRATEGY.flatmap(
 
 _ATTRIBUTE_STRATEGY = _ATTRIBUTE_STRATEGY.filter(lambda p: p[1] is not None)
 
-if _UDEV_VERSION <= 230:
+if _UDEV_VERSION <= 230:  # noqa: PLR2004
     _ATTRIBUTE_STRATEGY = _ATTRIBUTE_STRATEGY.filter(
-        lambda p: not p[1].startswith(b"\\")
-        and not p[1][-1:] == b" "
-        and not p[1].startswith(b"[")
+        lambda p: (
+            not p[1].startswith(b"\\")
+            and not p[1][-1:] == b" "
+            and not p[1].startswith(b"[")
+        )
     )
 
 # the tags object for a given device
@@ -121,7 +121,7 @@ _TAG_STRATEGY = _TAGS_STRATEGY.filter(lambda t: t != []).flatmap(
 )
 
 
-def _UDEV_TEST(version, node=None):  # pylint: disable=invalid-name
+def _UDEV_TEST(version, node=None):
     fmt_str = "%s: udev version must be at least %s, is %s"
     return pytest.mark.skipif(
         _UDEV_VERSION < version, reason=fmt_str % (node, version, _UDEV_VERSION)

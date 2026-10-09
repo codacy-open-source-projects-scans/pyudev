@@ -20,19 +20,13 @@ Tests methods belonging to Attributes class.
 .. moduleauthor::  mulhern <amulhern@redhat.com>
 """
 
-# isort: STDLIB
-import os
-import stat
-
-# isort: THIRDPARTY
 import pytest
 from hypothesis import given, settings, strategies
 
-# isort: LOCAL
 from pyudev import Devices
 
 from ..utils import is_unicode_string
-from ._device_tests import _CONTEXT_STRATEGY, _DEVICE_DATA, _DEVICES, _UDEV_TEST
+from ._device_tests import _CONTEXT_STRATEGY, _DEVICE_DATA, _DEVICES
 
 
 class TestAttributes:
@@ -56,7 +50,7 @@ class TestAttributes:
     @settings(max_examples=5)
     def test_getitem_nonexisting(self, a_device):
         """
-        Test behavior when corresponding value is non-existant.
+        Test behavior when corresponding value is non-existent.
         """
         not_key = "a non-existing attribute"
         assert a_device.attributes.get(not_key) is None
@@ -73,9 +67,9 @@ class TestAttributes:
         """
         Test that the attributes object can not be iterated over.
         """
-        # pylint: disable=pointless-statement
+
         with pytest.raises(TypeError):
-            "key" in a_device.attributes
+            "key" in a_device.attributes  # noqa: B015
         with pytest.raises(TypeError):
             a_device.attributes["key"]
 
@@ -99,9 +93,9 @@ class TestAttributes:
         Test that integer result is an int or ValueError raised.
         """
         device = Devices.from_path(a_context, device_datum.device_path)
-        for key, value in device_datum.attributes.items():
+        for key, val in device_datum.attributes.items():
             try:
-                value = int(value)
+                int(val)
             except ValueError:
                 try:
                     device.attributes.asint(key)
